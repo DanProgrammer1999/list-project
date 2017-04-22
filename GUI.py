@@ -54,7 +54,8 @@ class AddFrame(object):
         self.__root = root
         self.__window = Toplevel()
         frame = Frame(self.__window)
-        self.__text_field = Text(frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
+        #self.__text_field = Entry(frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
+        self.__text_field = Entry(frame, font='Ubuntu 14')
         self.__cancel_but = Button(frame, text='Cancel')
         self.__save_but = Button(frame, text='Add')
 
@@ -87,7 +88,7 @@ class AddFrame(object):
         self.__window.destroy()
 
     def __get_text(self):
-        return self.__text_field.get(0.0, 'end-1c')
+        return self.__text_field.get()
 
 
 class ListModelFrame(object):
