@@ -51,10 +51,12 @@ class AddFrame(object):
     __root = None
 
     def __init__(self, root):
+
         self.__root = root
+
         self.__window = Toplevel()
         frame = Frame(self.__window)
-        #self.__text_field = Entry(frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
+        #self.__text_field = Text(frame, height=1, width=20, font='Ubuntu 14')
         self.__text_field = Entry(frame, font='Ubuntu 14')
         self.__cancel_but = Button(frame, text='Cancel')
         self.__save_but = Button(frame, text='Add')
@@ -75,7 +77,7 @@ class AddFrame(object):
 
         frame.place(bordermode='inside', relwidth=1, relheight=1, relx=0.025, rely=0.05, width=-10, height=-10)
 
-        self.__root.mainloop()
+        self.__window.mainloop()
 
     def __save(self, event):
         text = self.__get_text()
@@ -92,22 +94,27 @@ class AddFrame(object):
 
 
 class ListModelFrame(object):
+
     __dataModel = None
     __entrysRoot = None
     __add_butt = None
 
     def addEntry(self, event):
+
         AddFrame(self.__entrysRoot)
 
     def update(self):
+
         return True
 
     def render(self):
+
         for e in self.__dataModel.getList():
             EntryFrame(self.__entrysRoot, e)
         self.__entrysRoot.pack(fill='both')
 
     def __init__(self, root, dataModel):
+
         self.__dataModel = dataModel
         main_frame = Frame(root, bg='white')
 
@@ -116,7 +123,8 @@ class ListModelFrame(object):
 
         buttonsFrame = Frame(main_frame, bg='white')
         addButton = Button(buttonsFrame, text=u'Add')
-        scrollbar = Scrollbar(main_frame, orient='vert')
+
+        #scrollbar = Scrollbar(main_frame, orient='vert')
 
         addButton.bind('<Button-1>', self.addEntry)
 
