@@ -8,7 +8,9 @@ remove_pic = PhotoImage(file='/home/dan/Programming/Python/Project_Y/com/Remove.
 class EntryFrame(object):
     __root = None
     __entry = None
+    __db_entry = None
     __list = None
+
 
     def saveEntry(self):
         return True
@@ -17,23 +19,24 @@ class EntryFrame(object):
         return True
 
     def removeEntry(self, event):
-        print('removing of element "' + self.__entry.getText() + '" with id ' + str(self.__entry.getId()))
-        list.removeEntry(self.__entry.getId())
+        print('removing of element "' + self.__db_entry.getText() + '" with id ' + str(self.__db_entry.getId()))
+        list.removeEntry(self.__db_entry.getId())
+        self.__entry.destroy()
 
     def getEntry(self):
         return self.__entry
 
-    def __init__(self, root, entry):
+    def __init__(self, root, db_entry):
         self.__root = root
-        self.__entry = entry
-        state = IntVar()
-        state.set(entry.getState())
+        self.__db_entry = db_entry
+        self.__state = IntVar()
+        self.__state.set(db_entry.getState())
 
-        entry_frame = Frame(self.__root, bg='#a59c9a')
+        self.__entry = entry_frame = Frame(self.__root, bg='#a59c9a')
 
-        eCheck = Checkbutton(entry_frame, variable=state, onvalue=1, offvalue=0)
+        eCheck = Checkbutton(entry_frame, variable=self.__state, onvalue=1, offvalue=0)
         eText = Text(entry_frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
-        eText.insert(1.10, self.__entry.getText())
+        eText.insert(1.10, self.__db_entry.getText())
         eRemoveBtn = Button(entry_frame, image=remove_pic)
 
         eRemoveBtn.bind('<Button-1>', self.removeEntry)
@@ -51,10 +54,12 @@ class AddFrame(object):
     __root = None
 
     def __init__(self, root):
+
         self.__root = root
+
         self.__window = Toplevel()
         frame = Frame(self.__window)
-        #self.__text_field = Entry(frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
+        #self.__text_field = Text(frame, height=1, width=20, font='Ubuntu 14')
         self.__text_field = Entry(frame, font='Ubuntu 14')
         self.__cancel_but = Button(frame, text='Cancel')
         self.__save_but = Button(frame, text='Add')
@@ -75,13 +80,15 @@ class AddFrame(object):
 
         frame.place(bordermode='inside', relwidth=1, relheight=1, relx=0.025, rely=0.05, width=-10, height=-10)
 
-        self.__root.mainloop()
+        self.__window.mainloop()
 
     def __save(self, event):
+
         text = self.__get_text()
         list.createEntry(text)
         print('Saved text ' + text)
         self.__window.destroy()
+        self.__root.update()
 
     def __cancel(self, event):
         print('Cancelled')
@@ -92,36 +99,48 @@ class AddFrame(object):
 
 
 class ListModelFrame(object):
+
+    __root = None
     __dataModel = None
     __entrysRoot = None
     __add_butt = None
 
     def addEntry(self, event):
-        AddFrame(self.__entrysRoot)
+
+        AddFrame(self)
 
     def update(self):
-        return True
+
+        self.__entrysRoot.destroy()
+        self.__entrysRoot = Canvas()
+        self.render()
 
     def render(self):
+
         for e in self.__dataModel.getList():
             EntryFrame(self.__entrysRoot, e)
-        self.__entrysRoot.pack(fill='both')
+        self.__entrysRoot.pack(fill='both', side='top')
+        scrollbar = Scrollbar(self.__entrysRoot, orient='vert', command=self.__entrysRoot.yview)
+        scrollbar.pack(side='right')
+        self.__entrysRoot.configure(yscrollcommand=scrollbar.set)
 
     def __init__(self, root, dataModel):
+
         self.__dataModel = dataModel
         main_frame = Frame(root, bg='white')
 
-        self.__entrysRoot = Frame(main_frame, bg='white')
+        self.__entrysRoot = Canvas(main_frame, bg='white')
         self.render()
 
         buttonsFrame = Frame(main_frame, bg='white')
         addButton = Button(buttonsFrame, text=u'Add')
-        scrollbar = Scrollbar(main_frame, orient='vert')
+
+        #scrollbar = Scrollbar(main_frame, orient='vert')
 
         addButton.bind('<Button-1>', self.addEntry)
 
         main_frame.pack(fill='both')
-        addButton.pack()
+        addButton.pack(side='bottom')
         buttonsFrame.pack(expand=True)
 
 a = ListModelFrame(window, list)
