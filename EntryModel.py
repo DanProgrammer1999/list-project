@@ -1,4 +1,4 @@
-from com.DatabaseManager import *
+from DatabaseManager import *
 
 class EntryModel:
     __id = None

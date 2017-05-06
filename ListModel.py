@@ -1,4 +1,4 @@
-from com.EntryModel import *
+from EntryModel import *
 
 class ListModel:
     __database = None

@@ -1,9 +1,9 @@
 from tkinter import *
-from com.ListModel import *
+from ListModel import *
 
 window = Tk()
-list = ListModel('todolist')
-remove_pic = PhotoImage(file='/home/dan/Programming/Python/Project_Y/com/Remove.png', width=50, height=50)
+list = ListModel('list')
+remove_pic = PhotoImage(file='Remove.png', width=50, height=50)
 
 class EntryFrame(object):
     __root = None
@@ -11,12 +11,16 @@ class EntryFrame(object):
     __db_entry = None
     __list = None
 
+    def destroy(self):
+        self.__entry.destroy()
+        self = None
 
-    def saveEntry(self):
+    def saveEntry(self, event):
+        self.__db_entry.setText(event.widget.get())
         return True
 
-    def changeState(self):
-        return True
+    def changeState(self, event):
+        self.__db_entry.changeState();
 
     def removeEntry(self, event):
         print('removing of element "' + self.__db_entry.getText() + '" with id ' + str(self.__db_entry.getId()))
@@ -35,8 +39,12 @@ class EntryFrame(object):
         self.__entry = entry_frame = Frame(self.__root, bg='#a59c9a')
 
         eCheck = Checkbutton(entry_frame, variable=self.__state, onvalue=1, offvalue=0)
-        eText = Text(entry_frame, height=1, width=20, font='Ubuntu 14', wrap=WORD)
-        eText.insert(1.10, self.__db_entry.getText())
+        eCheck.bind('<Button-1>', self.changeState);
+
+        eText = Entry(entry_frame, font='Ubuntu 14')
+        eText.insert(0, self.__db_entry.getText())
+        eText.bind('<FocusOut>', self.saveEntry)
+        eText.bind('<Return>', self.saveEntry)
         eRemoveBtn = Button(entry_frame, image=remove_pic)
 
         eRemoveBtn.bind('<Button-1>', self.removeEntry)
@@ -104,6 +112,7 @@ class ListModelFrame(object):
     __dataModel = None
     __entrysRoot = None
     __add_butt = None
+    __entry_list = []
 
     def addEntry(self, event):
 
@@ -111,25 +120,31 @@ class ListModelFrame(object):
 
     def update(self):
 
-        self.__entrysRoot.destroy()
-        self.__entrysRoot = Canvas()
+        #self.__entrysRoot.destroy()
+        #self.__entrysRoot = Canvas()
+        for elem in self.__entry_list:
+            elem.destroy()
         self.render()
 
     def render(self):
 
         for e in self.__dataModel.getList():
-            EntryFrame(self.__entrysRoot, e)
+            frame = EntryFrame(self.__entrysRoot, e)
+            self.__entry_list.append(frame)
         self.__entrysRoot.pack(fill='both', side='top')
-        scrollbar = Scrollbar(self.__entrysRoot, orient='vert', command=self.__entrysRoot.yview)
-        scrollbar.pack(side='right')
-        self.__entrysRoot.configure(yscrollcommand=scrollbar.set)
-
+        
     def __init__(self, root, dataModel):
 
         self.__dataModel = dataModel
-        main_frame = Frame(root, bg='white')
+        main_frame = Canvas(root, bg='white', height = 400)
 
-        self.__entrysRoot = Canvas(main_frame, bg='white')
+        self.__entrysRoot = Canvas(main_frame, bg='white', width=300,height=300,scrollregion=(0,0,500,500))
+
+        scrollbar = Scrollbar(self.__entrysRoot, orient='vert', command=self.__entrysRoot.yview)
+        scrollbar.pack(side='right', fill='y')
+        self.__entrysRoot.configure(yscrollcommand=scrollbar.set)
+
+        
         self.render()
 
         buttonsFrame = Frame(main_frame, bg='white')
