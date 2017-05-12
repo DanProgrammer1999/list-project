@@ -11,7 +11,7 @@ class DatabaseManager(object):
         return DatabaseManager.__inst
 
     def __init__(self):
-        self.__connection = pymysql.connect(host="localhost", user="root", passwd="fishkiller", db="todolist",
+        self.__connection = pymysql.connect(host="localhost", user="root", passwd="theWinner1999", db="list",
                                             use_unicode=True, charset="utf8", autocommit=True)
 
     def read_all(self, table):

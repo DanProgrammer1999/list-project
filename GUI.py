@@ -2,7 +2,7 @@ from tkinter import *
 from ListModel import *
 
 window = Tk()
-list = ListModel('list')
+list = ListModel('todolist')
 remove_pic = PhotoImage(file='Remove.png', width=50, height=50)
 
 class EntryFrame(object):
@@ -13,14 +13,15 @@ class EntryFrame(object):
 
     def destroy(self):
         self.__entry.destroy()
-        self = None
 
     def saveEntry(self, event):
         self.__db_entry.setText(event.widget.get())
+        print(self.__entry.focus_get())
+        self.__entry.focus()
         return True
 
     def changeState(self, event):
-        self.__db_entry.changeState();
+        self.__db_entry.changeState()
 
     def removeEntry(self, event):
         print('removing of element "' + self.__db_entry.getText() + '" with id ' + str(self.__db_entry.getId()))
@@ -39,7 +40,7 @@ class EntryFrame(object):
         self.__entry = entry_frame = Frame(self.__root, bg='#a59c9a')
 
         eCheck = Checkbutton(entry_frame, variable=self.__state, onvalue=1, offvalue=0)
-        eCheck.bind('<Button-1>', self.changeState);
+        eCheck.bind('<Button-1>', self.changeState)
 
         eText = Entry(entry_frame, font='Ubuntu 14')
         eText.insert(0, self.__db_entry.getText())
@@ -49,7 +50,7 @@ class EntryFrame(object):
 
         eRemoveBtn.bind('<Button-1>', self.removeEntry)
 
-        eText.pack()
+        eText.pack(fill='x')
         eRemoveBtn.pack(side=RIGHT)
         eCheck.pack(side=RIGHT)
         entry_frame.pack(fill='x')
@@ -82,7 +83,7 @@ class AddFrame(object):
         self.__cancel_but.bind('<Button-1>', self.__cancel)
         self.__text_field.focus()
 
-        self.__text_field.place(bordermode='inside', relwidth=0.963, height=30, relx=0, rely=0, x=2.47)
+        self.__text_field.place(bordermode='inside', relwidth=0.963, height=30, relx=0, rely=0, x=2.47,)
         self.__save_but.place(bordermode='inside', relx=0, rely=0.7,relwidth=0.47)
         self.__cancel_but.place(bordermode='inside', relx=0.5, rely=0.7, relwidth=0.47)
 
@@ -93,10 +94,9 @@ class AddFrame(object):
     def __save(self, event):
 
         text = self.__get_text()
-        list.createEntry(text)
         print('Saved text ' + text)
         self.__window.destroy()
-        self.__root.update()
+        self.__root.update(text)
 
     def __cancel(self, event):
         print('Cancelled')
@@ -118,13 +118,13 @@ class ListModelFrame(object):
 
         AddFrame(self)
 
-    def update(self):
+    def update(self, text):
 
-        #self.__entrysRoot.destroy()
-        #self.__entrysRoot = Canvas()
-        for elem in self.__entry_list:
+        '''for elem in self.__entry_list:
             elem.destroy()
-        self.render()
+        self.render()'''
+        frame = EntryFrame(self.__entrysRoot, list.createEntry(text))
+        self.__entry_list.append(frame)
 
     def render(self):
 
@@ -136,27 +136,24 @@ class ListModelFrame(object):
     def __init__(self, root, dataModel):
 
         self.__dataModel = dataModel
-        main_frame = Canvas(root, bg='white', height = 400)
 
-        self.__entrysRoot = Canvas(main_frame, bg='white', width=300,height=300,scrollregion=(0,0,500,500))
+        buttonsFrame = Frame(root, bg='white')
+        self.__entrysRoot = Canvas( bg='white', width=300, height=300, scrollregion=(0,0,5000000,500000000))
 
         scrollbar = Scrollbar(self.__entrysRoot, orient='vert', command=self.__entrysRoot.yview)
         scrollbar.pack(side='right', fill='y')
         self.__entrysRoot.configure(yscrollcommand=scrollbar.set)
 
-        
         self.render()
 
-        buttonsFrame = Frame(main_frame, bg='white')
         addButton = Button(buttonsFrame, text=u'Add')
 
         #scrollbar = Scrollbar(main_frame, orient='vert')
 
         addButton.bind('<Button-1>', self.addEntry)
 
-        main_frame.pack(fill='both')
         addButton.pack(side='bottom')
-        buttonsFrame.pack(expand=True)
+        buttonsFrame.pack(expand=False)
 
 a = ListModelFrame(window, list)
 window.title('TO DO List')

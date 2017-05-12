@@ -17,8 +17,10 @@ class ListModel:
 
     def createEntry(self, text):
         col_name = 'text'
-        id = self.__database.insert(self.__tableName, [col_name], [text])
-        self.__elements.append(EntryModel(self.__tableName, [id, text, 0]))
+        self.__database.insert(self.__tableName, [col_name], [text])
+        entry = EntryModel(self.__tableName, [id, text, 0])
+        self.__elements.append(entry)
+        return entry
 
     def removeEntry(self, id):
         self.__database.remove(self.__tableName, ['id'], [id])
